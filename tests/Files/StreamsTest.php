@@ -8,6 +8,7 @@
 
 namespace Spiral\Files\Tests;
 
+use PHPUnit\Framework\Error\Error;
 use PHPUnit\Framework\TestCase;
 use Spiral\Files\FileManager;
 use Spiral\Files\FilesInterface;
@@ -71,6 +72,22 @@ class StreamsTest extends TestCase
         fseek($resource, 7);
         $this->assertSame('text', stream_get_contents($resource, -1));
         $this->assertSame('sample', stream_get_contents($resource, 6, 0));
+    }
+
+    public function testException()
+    {
+        try {
+            fopen("spiral://non-exists", 'r');
+        } catch (Error $e) {
+            $this->assertContains("failed to open stream", $e->getMessage());
+        }
+
+
+        try {
+            filemtime("spiral://non-exists");
+        } catch (Error $e) {
+            $this->assertContains("stat failed", $e->getMessage());
+        }
     }
 
     public function testWriteIntoStream()
