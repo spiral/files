@@ -94,6 +94,15 @@ class IOTest extends TestCase
         $files->write(FIXTURE_DIRECTORY, 'data');
     }
 
+    /**
+     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     */
+    public function testGetPermissionsException()
+    {
+        $files = new Files();
+        $files->getPermissions(FIXTURE_DIRECTORY . '/missing');
+    }
+
     public function testAppend()
     {
         $files = new Files();
