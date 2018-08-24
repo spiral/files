@@ -52,5 +52,10 @@ class ConversionTest extends TestCase
             './some-filename.txt',
             $files->relativePath('/abc/some-filename.txt', '/abc/..')
         );
+
+        $this->assertSame(
+            '../some-filename.txt',
+            $files->relativePath('/abc/some-filename.txt', '/abc/../..')
+        );
     }
 }
