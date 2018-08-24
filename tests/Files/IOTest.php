@@ -85,6 +85,15 @@ class IOTest extends TestCase
         $files->read($filename);
     }
 
+    /**
+     * @expectedException \Spiral\Files\Exceptions\FilesException
+     */
+    public function testWriteForbidden()
+    {
+        $files = new Files();
+        $files->write(FIXTURE_DIRECTORY, 'data');
+    }
+
     public function testAppend()
     {
         $files = new Files();

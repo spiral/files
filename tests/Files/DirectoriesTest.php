@@ -73,6 +73,20 @@ class DirectoriesTest extends TestCase
         $this->assertTrue($files->isDirectory($directory));
     }
 
+    public function testEnsureNestedDirectoryNoRecursivePermissions()
+    {
+        $files = new Files();
+        $directory = FIXTURE_DIRECTORY . 'directory/sub/other';
+
+        $this->assertFalse($files->exists($directory));
+        $this->assertFalse($files->isDirectory($directory));
+
+        $files->ensureDirectory($directory, Files::DEFAULT_FILE_MODE, false);
+
+        $this->assertTrue($files->exists($directory));
+        $this->assertTrue($files->isDirectory($directory));
+    }
+
     public function testEnsureExistedNestedDirectory()
     {
         $files = new Files();
@@ -182,6 +196,17 @@ class DirectoriesTest extends TestCase
         foreach ($filenames as $filename) {
             $this->assertFalse($files->exists($filename));
         }
+    }
+
+    /**
+     * @expectedException \Spiral\Files\Exceptions\FilesException
+     */
+    public function testDeleteDirectoryButFile()
+    {
+        $files = new Files();
+
+        $files->write(FIXTURE_DIRECTORY . 'test', 'data');
+        $files->deleteDirectory(FIXTURE_DIRECTORY . 'test');
     }
 
     public function testGetFiles()
