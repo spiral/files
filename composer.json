@@ -1,0 +1,27 @@
+{
+  "name": "spiral/files",
+  "type": "library",
+  "description": "File Toolkit: atomic file manager, virtual file streams",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Wolfy-J",
+      "email": "wolfy.jd@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "psr/http-message": "^1.0",
+    "symfony/finder": "^4.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~7.0",
+    "mockery/mockery": "^1.1",
+    "zendframework/zend-diactoros": "^1.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Spiral\\Files\\": "src/"
+    }
+  }
+}
