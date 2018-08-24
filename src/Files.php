@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
 /**
  * Default abstraction for file management operations.
  */
-class FileManager implements FilesInterface
+class Files implements FilesInterface
 {
     /**
      * Default file mode for this manager.

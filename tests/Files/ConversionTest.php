@@ -9,13 +9,13 @@
 namespace Spiral\Files\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Spiral\Files\FileManager;
+use Spiral\Files\Files;
 
 class ConversionTest extends TestCase
 {
     public function testNormalizeFilePath()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $this->assertSame('/abc/file.name', $files->normalizePath('/abc\\file.name'));
         $this->assertSame('/abc/file.name', $files->normalizePath('\\abc//file.name'));
@@ -23,7 +23,7 @@ class ConversionTest extends TestCase
 
     public function testNormalizeDirectoryPath()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $this->assertSame('/abc/dir/', $files->normalizePath('\\abc/dir', true));
         $this->assertSame('/abc/dir/', $files->normalizePath('\\abc//dir', true));
@@ -31,7 +31,7 @@ class ConversionTest extends TestCase
 
     public function testRelativePath()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $this->assertSame(
             'some-filename.txt',
@@ -41,6 +41,16 @@ class ConversionTest extends TestCase
         $this->assertSame(
             '../some-filename.txt',
             $files->relativePath('/abc/../some-filename.txt', '/abc')
+        );
+
+        $this->assertSame(
+            '../../some-filename.txt',
+            $files->relativePath('/abc/../../some-filename.txt', '/abc')
+        );
+
+        $this->assertSame(
+            '../some-filename.txt',
+            $files->relativePath('/abc/../../some-filename.txt', '/abc/..')
         );
     }
 }

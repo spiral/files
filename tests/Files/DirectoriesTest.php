@@ -9,26 +9,26 @@
 namespace Spiral\Files\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Spiral\Files\FileManager;
+use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 
 class DirectoriesTest extends TestCase
 {
     public function setUp()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->ensureDirectory(FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
     }
 
     public function tearDown()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->deleteDirectory(FIXTURE_DIRECTORY, true);
     }
 
     public function testEnsureDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . 'directory/';
 
         $this->assertFalse($files->exists($directory));
@@ -42,7 +42,7 @@ class DirectoriesTest extends TestCase
 
     public function testEnsureExistedDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . 'directory/';
 
         $this->assertFalse($files->exists($directory));
@@ -61,7 +61,7 @@ class DirectoriesTest extends TestCase
 
     public function testEnsureNestedDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . 'directory/sub/other';
 
         $this->assertFalse($files->exists($directory));
@@ -75,7 +75,7 @@ class DirectoriesTest extends TestCase
 
     public function testEnsureExistedNestedDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . 'directory/sub/other';
 
         $this->assertFalse($files->exists($directory));
@@ -96,7 +96,7 @@ class DirectoriesTest extends TestCase
 
     public function testDeleteDirectoryContent()
     {
-        $files = new FileManager();
+        $files = new Files();
         $baseDirectory = FIXTURE_DIRECTORY . 'directory/';
         $directory = $baseDirectory . 'sub/other';
 
@@ -141,7 +141,7 @@ class DirectoriesTest extends TestCase
 
     public function testDeleteDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $baseDirectory = FIXTURE_DIRECTORY . 'directory/';
         $directory = $baseDirectory . 'sub/other';
 
@@ -186,13 +186,13 @@ class DirectoriesTest extends TestCase
 
     public function testGetFiles()
     {
-        $files = new FileManager();
+        $files = new Files();
         $this->assertNotEmpty($files->getFiles(__DIR__));
     }
 
     public function testGetFilesPattern()
     {
-        $files = new FileManager();
+        $files = new Files();
         $this->assertEmpty($files->getFiles(__DIR__, '*.jpg'));
     }
 }

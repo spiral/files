@@ -10,7 +10,7 @@ namespace Spiral\Files\Tests;
 
 use PHPUnit\Framework\Error\Error;
 use PHPUnit\Framework\TestCase;
-use Spiral\Files\FileManager;
+use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 use Spiral\Files\Streams\StreamWrapper;
 use Zend\Diactoros\Stream;
@@ -19,13 +19,13 @@ class StreamsTest extends TestCase
 {
     public function setUp()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->ensureDirectory(FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
     }
 
     public function tearDown()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->deleteDirectory(FIXTURE_DIRECTORY, true);
     }
 

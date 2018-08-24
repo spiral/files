@@ -9,26 +9,26 @@
 namespace Spiral\Files\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Spiral\Files\FileManager;
+use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 
 class TempFilesTest extends TestCase
 {
     public function setUp()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->ensureDirectory(FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
     }
 
     public function tearDown()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->deleteDirectory(FIXTURE_DIRECTORY, true);
     }
 
     public function testTempFilename()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $tempFilename = $files->tempFilename();
         $this->assertTrue($files->exists($tempFilename));
@@ -40,7 +40,7 @@ class TempFilesTest extends TestCase
 
     public function testTempExtension()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $tempFilename = $files->tempFilename('txt');
         $this->assertTrue($files->exists($tempFilename));
@@ -53,7 +53,7 @@ class TempFilesTest extends TestCase
 
     public function testTempCustomLocation()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $tempFilename = $files->tempFilename('txt', FIXTURE_DIRECTORY);
         $this->assertTrue($files->exists($tempFilename));
@@ -72,7 +72,7 @@ class TempFilesTest extends TestCase
 
     public function testAutoRemovalFilesWithExtensions()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $tempFilename = $files->tempFilename('txt');
         $this->assertTrue($files->exists($tempFilename));

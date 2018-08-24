@@ -9,26 +9,26 @@
 namespace Spiral\Files\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Spiral\Files\FileManager;
+use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 
 class InformationTest extends TestCase
 {
     public function setUp()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->ensureDirectory(FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
     }
 
     public function tearDown()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->deleteDirectory(FIXTURE_DIRECTORY, true);
     }
 
     public function testTime()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $files->write($filename, 'data', FilesInterface::READONLY);
@@ -41,7 +41,7 @@ class InformationTest extends TestCase
      */
     public function testTimeMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $files->time($filename);
@@ -49,7 +49,7 @@ class InformationTest extends TestCase
 
     public function testMD5()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $files->write($filename, 'data');
@@ -63,7 +63,7 @@ class InformationTest extends TestCase
      */
     public function testMD5MissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $files->md5($filename);
@@ -71,7 +71,7 @@ class InformationTest extends TestCase
 
     public function testExtension()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $this->assertSame('txt', $files->extension('test.txt'));
         $this->assertSame('txt', $files->extension('test.TXT'));
@@ -80,7 +80,7 @@ class InformationTest extends TestCase
 
     public function testExists()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -93,7 +93,7 @@ class InformationTest extends TestCase
 
     public function testSize()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -109,7 +109,7 @@ class InformationTest extends TestCase
      */
     public function testSizeMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -118,7 +118,7 @@ class InformationTest extends TestCase
 
     public function testLocalUri()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -132,7 +132,7 @@ class InformationTest extends TestCase
      */
     public function testLocalUriMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -141,7 +141,7 @@ class InformationTest extends TestCase
 
     public function testIsFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -157,7 +157,7 @@ class InformationTest extends TestCase
 
     public function testIsMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -171,7 +171,7 @@ class InformationTest extends TestCase
 
     public function testIsDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . '/directory/';
 
         $this->assertFalse($files->exists($directory));
@@ -187,7 +187,7 @@ class InformationTest extends TestCase
 
     public function testIsMissingDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . '/directory/';
 
         $this->assertFalse($files->exists($directory));
@@ -201,7 +201,7 @@ class InformationTest extends TestCase
 
     public function testIsDirectoryNoSlash()
     {
-        $files = new FileManager();
+        $files = new Files();
         $directory = FIXTURE_DIRECTORY . '/directory';
 
         $this->assertFalse($files->exists($directory));

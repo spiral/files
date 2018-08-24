@@ -9,26 +9,26 @@
 namespace Spiral\Files\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Spiral\Files\FileManager;
+use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 
 class IOTest extends TestCase
 {
     public function setUp()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->ensureDirectory(FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
     }
 
     public function tearDown()
     {
-        $files = new FileManager();
+        $files = new Files();
         $files->deleteDirectory(FIXTURE_DIRECTORY, true);
     }
 
     public function testWrite()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $this->assertFalse($files->exists($filename));
@@ -41,7 +41,7 @@ class IOTest extends TestCase
 
     public function testWriteAndEnsureDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $directory = FIXTURE_DIRECTORY . '/directory/abc/';
         $filename = $directory . 'test.txt';
@@ -60,7 +60,7 @@ class IOTest extends TestCase
 
     public function testRead()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $this->assertFalse($files->exists($filename));
@@ -77,7 +77,7 @@ class IOTest extends TestCase
      */
     public function testReadMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $this->assertFalse($files->exists($filename));
@@ -87,7 +87,7 @@ class IOTest extends TestCase
 
     public function testAppend()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $this->assertFalse($files->exists($filename));
@@ -103,7 +103,7 @@ class IOTest extends TestCase
 
     public function testAppendEnsureDirectory()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $directory = FIXTURE_DIRECTORY . '/directory/abc/';
         $filename = $directory . 'test.txt';
@@ -125,7 +125,7 @@ class IOTest extends TestCase
 
     public function testTouch()
     {
-        $files = new FileManager();
+        $files = new Files();
 
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
@@ -136,7 +136,7 @@ class IOTest extends TestCase
 
     public function testDelete()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -150,7 +150,7 @@ class IOTest extends TestCase
 
     public function testDeleteMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
 
         $this->assertFalse($files->exists($filename));
@@ -159,7 +159,7 @@ class IOTest extends TestCase
 
     public function testCopy()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $destination = FIXTURE_DIRECTORY . '/new.txt';
 
@@ -184,7 +184,7 @@ class IOTest extends TestCase
      */
     public function testCopyMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $destination = FIXTURE_DIRECTORY . '/new.txt';
 
@@ -194,7 +194,7 @@ class IOTest extends TestCase
 
     public function testMove()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $destination = FIXTURE_DIRECTORY . '/new.txt';
 
@@ -219,7 +219,7 @@ class IOTest extends TestCase
      */
     public function testMoveMissingFile()
     {
-        $files = new FileManager();
+        $files = new Files();
         $filename = FIXTURE_DIRECTORY . '/test.txt';
         $destination = FIXTURE_DIRECTORY . '/new.txt';
 
