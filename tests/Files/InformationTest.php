@@ -36,7 +36,7 @@ class InformationTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testTimeMissingFile()
@@ -58,7 +58,7 @@ class InformationTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testMD5MissingFile()
@@ -104,7 +104,7 @@ class InformationTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testSizeMissingFile()
@@ -127,7 +127,7 @@ class InformationTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testLocalUriMissingFile()

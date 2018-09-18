@@ -6,7 +6,7 @@
  * @author    Anton Titov (Wolfy-J)
  */
 
-namespace Spiral\Files\Exceptions;
+namespace Spiral\Files\Exception;
 
 /**
  * File can not be written.

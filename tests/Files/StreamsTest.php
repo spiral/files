@@ -12,7 +12,7 @@ use PHPUnit\Framework\Error\Error;
 use PHPUnit\Framework\TestCase;
 use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
-use Spiral\Files\Streams\StreamWrapper;
+use Spiral\Files\Stream\StreamWrapper;
 use Zend\Diactoros\Stream;
 
 class StreamsTest extends TestCase

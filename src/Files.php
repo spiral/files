@@ -8,16 +8,16 @@
 
 namespace Spiral\Files;
 
-use Spiral\Files\Exceptions\FileNotFoundException;
-use Spiral\Files\Exceptions\FilesException;
-use Spiral\Files\Exceptions\WriteErrorException;
+use Spiral\Files\Exception\FileNotFoundException;
+use Spiral\Files\Exception\FilesException;
+use Spiral\Files\Exception\WriteErrorException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
 
 /**
  * Default abstraction for file management operations.
  */
-class Files implements FilesInterface
+final class Files implements FilesInterface
 {
     /**
      * Default file mode for this manager.

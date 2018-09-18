@@ -8,8 +8,8 @@
 
 namespace Spiral\Files;
 
-use Spiral\Files\Exceptions\FileNotFoundException;
-use Spiral\Files\Exceptions\WriteErrorException;
+use Spiral\Files\Exception\FileNotFoundException;
+use Spiral\Files\Exception\WriteErrorException;
 
 /**
  * Access to hard drive or local store. Does not provide full filesystem abstractions.

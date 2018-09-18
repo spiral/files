@@ -199,7 +199,7 @@ class DirectoriesTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FilesException
+     * @expectedException \Spiral\Files\Exception\FilesException
      */
     public function testDeleteDirectoryButFile()
     {

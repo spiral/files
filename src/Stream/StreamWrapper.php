@@ -6,10 +6,10 @@
  * @author    Anton Titov (Wolfy-J)
  */
 
-namespace Spiral\Files\Streams;
+namespace Spiral\Files\Stream;
 
 use Psr\Http\Message\StreamInterface;
-use Spiral\Files\Exceptions\WrapperException;
+use Spiral\Files\Exception\WrapperException;
 
 /**
  * Spiral converter of PSR-7 streams to virtual filenames. Static as hell.

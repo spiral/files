@@ -72,7 +72,7 @@ class IOTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testReadMissingFile()
@@ -86,7 +86,7 @@ class IOTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FilesException
+     * @expectedException \Spiral\Files\Exception\FilesException
      */
     public function testWriteForbidden()
     {
@@ -95,7 +95,7 @@ class IOTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      */
     public function testGetPermissionsException()
     {
@@ -197,7 +197,7 @@ class IOTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testCopyMissingFile()
@@ -232,7 +232,7 @@ class IOTest extends TestCase
     }
 
     /**
-     * @expectedException \Spiral\Files\Exceptions\FileNotFoundException
+     * @expectedException \Spiral\Files\Exception\FileNotFoundException
      * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
      */
     public function testMoveMissingFile()

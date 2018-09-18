@@ -6,7 +6,7 @@
  * @author    Anton Titov (Wolfy-J)
  */
 
-namespace Spiral\Files\Streams;
+namespace Spiral\Files\Stream;
 
 use Psr\Http\Message\StreamInterface;
 
