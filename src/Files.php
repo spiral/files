@@ -333,7 +333,7 @@ final class Files implements FilesInterface
         $result = [];
         foreach ($this->filesIterator($location, $pattern) as $filename) {
             if ($this->isDirectory($filename)) {
-                $result = array_merge($result, $this->getFiles($filename . '/'));
+                $result = array_merge($result, $this->getFiles($filename . DIRECTORY_SEPARATOR));
 
                 continue;
             }
@@ -429,7 +429,7 @@ final class Files implements FilesInterface
      */
     private function filesIterator(string $location, string $pattern = null): \GlobIterator
     {
-        $pattern = $pattern ?? "*";
+        $pattern = $pattern ?? '*';
         $regexp = rtrim($location, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($pattern, DIRECTORY_SEPARATOR);
 
         return new \GlobIterator($regexp);
