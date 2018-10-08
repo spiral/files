@@ -97,16 +97,6 @@ interface FilesInterface
     ): bool;
 
     /**
-     * Method has to return local uri which can be used in require and include statements.
-     * Implementation is allowed to use virtual stream uris if it's not local.
-     *
-     * @param string $filename
-     *
-     * @return string
-     */
-    public function localFilename(string $filename): string;
-
-    /**
      * Delete local file if possible. No error should be raised if file does not exists.
      *
      * @param string $filename

@@ -123,20 +123,7 @@ class InformationTest extends TestCase
 
         $this->assertFalse($files->exists($filename));
         $files->write($filename, 'data');
-        $this->assertSame($filename, $files->localFilename($filename));
-    }
-
-    /**
-     * @expectedException \Spiral\Files\Exception\FileNotFoundException
-     * @expectedExceptionMessageRegExp /File '.*test.txt' not found/
-     */
-    public function testLocalUriMissingFile()
-    {
-        $files = new Files();
-        $filename = FIXTURE_DIRECTORY . '/test.txt';
-
-        $this->assertFalse($files->exists($filename));
-        $files->localFilename($filename);
+        $this->assertSame($filename, $filename);
     }
 
     public function testIsFile()

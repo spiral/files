@@ -11,8 +11,6 @@ namespace Spiral\Files;
 use Spiral\Files\Exception\FileNotFoundException;
 use Spiral\Files\Exception\FilesException;
 use Spiral\Files\Exception\WriteErrorException;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
 
 /**
  * Default abstraction for file management operations.
@@ -150,19 +148,6 @@ final class Files implements FilesInterface
     /**
      * {@inheritdoc}
      */
-    public function localFilename(string $filename): string
-    {
-        if (!$this->exists($filename)) {
-            throw new FileNotFoundException($filename);
-        }
-
-        //Since default implementation is local we are allowed to do that
-        return $filename;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function delete(string $filename)
     {
         if ($this->exists($filename)) {
@@ -194,7 +179,7 @@ final class Files implements FilesInterface
         }
 
         $files = new \RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
             \RecursiveIteratorIterator::CHILD_FIRST
         );
 
@@ -342,21 +327,18 @@ final class Files implements FilesInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @param Finder $finder Pre-configured Finder.
      */
-    public function getFiles(string $location, string $pattern = null, Finder $finder = null): array
+    public function getFiles(string $location, string $pattern = null): array
     {
-        $finder = $finder ?? new Finder();
-        $finder->files()->in($location);
-
-        if (!empty($pattern)) {
-            $finder->name($pattern);
-        }
-
         $result = [];
-        foreach ($finder->getIterator() as $file) {
-            $result[] = $this->normalizePath((string)$file);
+        foreach ($this->filesIterator($location, $pattern) as $filename) {
+            if ($this->isDirectory($filename)) {
+                $result = array_merge($result, $this->getFiles($filename . '/'));
+
+                continue;
+            }
+
+            $result[] = $this->normalizePath((string)$filename);
         }
 
         return $result;
@@ -437,5 +419,19 @@ final class Files implements FilesInterface
         foreach ($this->destructFiles as $filename) {
             $this->delete($filename);
         }
+    }
+
+    /**
+     * @param string      $location
+     * @param string|null $pattern
+     *
+     * @return \GlobIterator
+     */
+    private function filesIterator(string $location, string $pattern = null): \GlobIterator
+    {
+        $pattern = $pattern ?? "*";
+        $regexp = rtrim($location, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($pattern, DIRECTORY_SEPARATOR);
+
+        return new \GlobIterator($regexp);
     }
 }
