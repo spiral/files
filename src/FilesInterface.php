@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Spiral Framework.
  *
@@ -61,7 +61,7 @@ interface FilesInterface
      *
      * @param string $filename
      * @param string $data
-     * @param int    $mode            When NULL class can pick default mode.
+     * @param int    $mode When NULL class can pick default mode.
      * @param bool   $ensureDirectory Ensure final destination!
      *
      * @return bool
@@ -235,7 +235,7 @@ interface FilesInterface
      * Note: not a generator yet, waiting for PHP7.
      *
      * @param string $location Location for search.
-     * @param string $pattern  Extension pattern.
+     * @param string $pattern Extension pattern.
      *
      * @return array
      */
@@ -259,7 +259,7 @@ interface FilesInterface
     /**
      * Create the most normalized version for path to file or location.
      *
-     * @param string $path        File or location path.
+     * @param string $path File or location path.
      * @param bool   $asDirectory Path points to directory.
      *
      * @return string

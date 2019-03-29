@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Spiral Framework.
  *
@@ -130,7 +130,7 @@ final class Files implements FilesInterface
             throw new WriteErrorException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $result;
+        return $result !== false;
     }
 
     /**
@@ -332,7 +332,7 @@ final class Files implements FilesInterface
     {
         $result = [];
         foreach ($this->filesIterator($location, $pattern) as $filename) {
-            if ($this->isDirectory($filename)) {
+            if ($this->isDirectory($filename->getPathname())) {
                 $result = array_merge($result, $this->getFiles($filename . DIRECTORY_SEPARATOR));
 
                 continue;
@@ -425,7 +425,7 @@ final class Files implements FilesInterface
      * @param string      $location
      * @param string|null $pattern
      *
-     * @return \GlobIterator
+     * @return \GlobIterator|\SplFileInfo[]
      */
     private function filesIterator(string $location, string $pattern = null): \GlobIterator
     {
