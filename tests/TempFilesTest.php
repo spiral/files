@@ -1,12 +1,5 @@
 <?php
 
-/**
- * This file is part of Spiral Framework package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Spiral\Tests\Files;
@@ -85,9 +78,6 @@ class TempFilesTest extends TestCase
 
         $files->__destruct();
 
-        // Note: assertFileNotExists() is deprecated since phpunit 9.0, but
-        // assertFileDoesNotExist() no implemented in phpunit 8.0
-        // (for PHP 7.2 compatibility).
-        $this->assertFalse(is_file($tempFilename));
+        $this->assertFileDoesNotExist($tempFilename);
     }
 }
