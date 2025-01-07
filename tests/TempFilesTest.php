@@ -26,11 +26,11 @@ class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename();
-        self::assertTrue($files->exists($tempFilename));
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
     }
 
     public function testTempExtension(): void
@@ -38,12 +38,12 @@ class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename('txt');
-        self::assertTrue($files->exists($tempFilename));
-        self::assertSame('txt', $files->extension($tempFilename));
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
+        $this->assertSame('txt', $files->extension($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
     }
 
     public function testTempCustomLocation(): void
@@ -51,15 +51,18 @@ class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename('txt', self::FIXTURE_DIRECTORY);
-        self::assertTrue($files->exists($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
 
-        self::assertSame('txt', $files->extension($tempFilename));
-        self::assertSame($files->normalizePath(self::FIXTURE_DIRECTORY, true), $files->normalizePath(dirname($tempFilename), true));
+        $this->assertSame('txt', $files->extension($tempFilename));
+        $this->assertSame(
+            $files->normalizePath(self::FIXTURE_DIRECTORY, true),
+            $files->normalizePath(dirname($tempFilename), true)
+        );
 
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
     }
 
     public function testAutoRemovalFilesWithExtensions(): void
@@ -67,14 +70,14 @@ class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename('txt');
-        self::assertTrue($files->exists($tempFilename));
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
 
         $files->__destruct();
 
-        self::assertFileDoesNotExist($tempFilename);
+        $this->assertFileDoesNotExist($tempFilename);
     }
 }
