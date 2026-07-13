@@ -32,22 +32,12 @@ final class Files implements FilesInterface
     }
 
     /**
-     * Destruct every temporary file.
-     */
-    public function __destruct()
-    {
-        foreach ($this->destructFiles as $filename) {
-            $this->delete($filename);
-        }
-    }
-
-    /**
      * @param bool $recursivePermissions Propagate permissions on created directories.
      */
     public function ensureDirectory(
         string $directory,
-        int $mode = null,
-        bool $recursivePermissions = true
+        ?int $mode = null,
+        bool $recursivePermissions = true,
     ): bool {
         if (empty($mode)) {
             $mode = self::DEFAULT_FILE_MODE;
@@ -72,7 +62,7 @@ final class Files implements FilesInterface
         }
 
         foreach (\array_reverse($directoryChain) as $dir) {
-            if (!mkdir($baseDirectory = \sprintf('%s/%s', $baseDirectory, $dir))) {
+            if (!\mkdir($baseDirectory = \sprintf('%s/%s', $baseDirectory, $dir))) {
                 return false;
             }
 
@@ -88,7 +78,10 @@ final class Files implements FilesInterface
             throw new FileNotFoundException($filename);
         }
 
-        return \file_get_contents($filename);
+        $result = \file_get_contents($filename);
+        return $result === false
+            ? throw new FilesException(\sprintf('Unable to read file `%s`.', $filename))
+            : $result;
     }
 
     /**
@@ -97,15 +90,22 @@ final class Files implements FilesInterface
     public function write(
         string $filename,
         string $data,
-        int $mode = null,
+        ?int $mode = null,
         bool $ensureDirectory = false,
-        bool $append = false
+        bool $append = false,
     ): bool {
         $mode ??= self::DEFAULT_FILE_MODE;
 
+        if ($this->isDirectory($filename)) {
+            throw new WriteErrorException(\sprintf('Unable to write file `%s`, path is a directory.', $filename));
+        }
+
         try {
             if ($ensureDirectory) {
-                $this->ensureDirectory(\dirname($filename), $mode);
+                $directory = \dirname($filename);
+                if (!$this->isDirectory($directory) || !\is_writable($directory)) {
+                    $this->ensureDirectory($directory, $mode);
+                }
             }
 
             if ($this->exists($filename)) {
@@ -116,7 +116,7 @@ final class Files implements FilesInterface
             $result = \file_put_contents(
                 $filename,
                 $data,
-                $append ? FILE_APPEND | LOCK_EX : LOCK_EX
+                $append ? FILE_APPEND | LOCK_EX : LOCK_EX,
             );
 
             if ($result !== false) {
@@ -133,8 +133,8 @@ final class Files implements FilesInterface
     public function append(
         string $filename,
         string $data,
-        int $mode = null,
-        bool $ensureDirectory = false
+        ?int $mode = null,
+        bool $ensureDirectory = false,
     ): bool {
         return $this->write($filename, $data, $mode, $ensureDirectory, true);
     }
@@ -166,7 +166,7 @@ final class Files implements FilesInterface
 
         $files = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
+            \RecursiveIteratorIterator::CHILD_FIRST,
         );
 
         foreach ($files as $file) {
@@ -202,7 +202,7 @@ final class Files implements FilesInterface
         return \copy($filename, $destination);
     }
 
-    public function touch(string $filename, int $mode = null): bool
+    public function touch(string $filename, ?int $mode = null): bool
     {
         if (!\touch($filename)) {
             return false;
@@ -218,11 +218,9 @@ final class Files implements FilesInterface
 
     public function size(string $filename): int
     {
-        if (!$this->exists($filename)) {
-            throw new FileNotFoundException($filename);
-        }
+        $this->exists($filename) or throw new FileNotFoundException($filename);
 
-        return \filesize($filename);
+        return (int) \filesize($filename);
     }
 
     public function extension(string $filename): string
@@ -236,7 +234,12 @@ final class Files implements FilesInterface
             throw new FileNotFoundException($filename);
         }
 
-        return \md5_file($filename);
+        $result = \md5_file($filename);
+        $result === false and throw new FilesException(
+            \sprintf('Unable to read md5 hash for `%s`.', $filename),
+        );
+
+        return $result;
     }
 
     public function time(string $filename): int
@@ -245,7 +248,9 @@ final class Files implements FilesInterface
             throw new FileNotFoundException($filename);
         }
 
-        return \filemtime($filename);
+        return \filemtime($filename) ?: throw new FilesException(
+            \sprintf('Unable to read modification time for `%s`.', $filename),
+        );
     }
 
     public function isDirectory(string $filename): bool
@@ -260,11 +265,12 @@ final class Files implements FilesInterface
 
     public function getPermissions(string $filename): int
     {
-        if (!$this->exists($filename)) {
-            throw new FileNotFoundException($filename);
-        }
-
-        return \fileperms($filename) & 0777;
+        $this->exists($filename) or throw new FileNotFoundException($filename);
+        $permission = \fileperms($filename);
+        $permission === false and throw new FilesException(
+            \sprintf('Unable to read permissions for `%s`.', $filename),
+        );
+        return $permission & 0777;
     }
 
     public function setPermissions(string $filename, int $mode): bool
@@ -277,29 +283,30 @@ final class Files implements FilesInterface
         return $this->getPermissions($filename) === $mode || \chmod($filename, $mode);
     }
 
-    public function getFiles(string $location, string $pattern = null): array
+    public function getFiles(string $location, ?string $pattern = null): array
     {
         $result = [];
         foreach ($this->filesIterator($location, $pattern) as $filename) {
-            if ($this->isDirectory($filename->getPathname())) {
+            if ($this->isDirectory($filename)) {
                 $result = \array_merge($result, $this->getFiles($filename . DIRECTORY_SEPARATOR));
 
                 continue;
             }
 
-            $result[] = $this->normalizePath((string)$filename);
+            $result[] = $this->normalizePath($filename);
         }
 
         return $result;
     }
 
-    public function tempFilename(string $extension = '', string $location = null): string
+    public function tempFilename(string $extension = '', ?string $location = null): string
     {
         if (empty($location)) {
             $location = \sys_get_temp_dir();
         }
 
         $filename = \tempnam($location, 'spiral');
+        $filename === false and throw new FilesException('Unable to create temporary file.');
 
         if (!empty($extension)) {
             $old = $filename;
@@ -358,11 +365,32 @@ final class Files implements FilesInterface
         return \implode('/', $relative);
     }
 
-    private function filesIterator(string $location, string $pattern = null): \GlobIterator
+    /**
+     * Destruct every temporary file.
+     */
+    public function __destruct()
+    {
+        foreach ($this->destructFiles as $filename) {
+            $this->delete($filename);
+        }
+    }
+
+    /**
+     * CURRENT_AS_PATHNAME makes the iterator yield each match as its non-empty pathname
+     * string; psalm's GlobIterator stub still types the value as SplFileInfo|string.
+     *
+     * @param non-empty-string $location Location for search.
+     * @param non-empty-string|null $pattern Extension pattern.
+     *
+     * @return iterable<non-empty-string>
+     *
+     * @psalm-suppress all
+     */
+    private function filesIterator(string $location, ?string $pattern = null): iterable
     {
         $pattern ??= '*';
         $regexp = \rtrim($location, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . \ltrim($pattern, DIRECTORY_SEPARATOR);
 
-        return new \GlobIterator($regexp);
+        return new \GlobIterator($regexp, \FilesystemIterator::CURRENT_AS_PATHNAME);
     }
 }

@@ -9,31 +9,19 @@ use Spiral\Files\Exception\FilesException;
 use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 
-class IOTest extends TestCase
+final class IOTest extends TestCase
 {
-    public function setUp(): void
-    {
-        $files = new Files();
-        $files->ensureDirectory(self::FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
-    }
-
-    public function tearDown(): void
-    {
-        $files = new Files();
-        $files->deleteDirectory(self::FIXTURE_DIRECTORY, true);
-    }
-
     public function testWrite(): void
     {
         $files = new Files();
 
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
 
         $files->write($filename, 'some-data');
-        $this->assertTrue($files->exists($filename));
+        self::assertTrue($files->exists($filename));
 
-        $this->assertSame('some-data', file_get_contents($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
     }
 
     public function testWriteAndEnsureDirectory(): void
@@ -43,16 +31,69 @@ class IOTest extends TestCase
         $directory = self::FIXTURE_DIRECTORY . '/directory/abc/';
         $filename = $directory . 'test.txt';
 
-        $this->assertFalse($files->exists($directory));
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($directory));
+        self::assertFalse($files->exists($filename));
 
-        $this->assertFalse($files->isDirectory($directory));
+        self::assertFalse($files->isDirectory($directory));
 
         $files->write($filename, 'some-data', FilesInterface::READONLY, true);
 
-        $this->assertTrue($files->isDirectory($directory));
-        $this->assertTrue($files->exists($filename));
-        $this->assertSame('some-data', file_get_contents($filename));
+        self::assertTrue($files->isDirectory($directory));
+        self::assertTrue($files->exists($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
+    }
+
+    public function testWriteAndEnsureDirectoryKeepsExistingDirectoryPermissions(): void
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            self::markTestSkipped('Unix file permissions are not enforced on Windows.');
+        }
+
+        $files = new Files();
+
+        $directory = self::FIXTURE_DIRECTORY . '/directory/';
+        $filename = $directory . 'test.txt';
+
+        $files->ensureDirectory($directory, FilesInterface::READONLY);
+        self::assertSame(0755, $files->getPermissions($directory));
+
+        $files->write($filename, 'some-data', FilesInterface::RUNTIME, true);
+
+        self::assertSame(0755, $files->getPermissions($directory));
+        self::assertSame(FilesInterface::RUNTIME, $files->getPermissions($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
+    }
+
+    public function testWriteAndEnsureDirectoryRepairsNotWritableDirectoryPermissions(): void
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            self::markTestSkipped('Unix file permissions are not enforced on Windows.');
+        }
+
+        if (\function_exists('posix_getuid') && \posix_getuid() === 0) {
+            self::markTestSkipped('Root bypasses directory write permissions.');
+        }
+
+        $files = new Files();
+
+        $directory = self::FIXTURE_DIRECTORY . '/directory/';
+        $filename = $directory . 'test.txt';
+
+        $files->ensureDirectory($directory, FilesInterface::READONLY);
+        $directoryMode = $files->getPermissions($directory);
+
+        @\chmod($directory, 0555);
+        \clearstatcache(false, $directory);
+
+        try {
+            $files->write($filename, 'some-data', FilesInterface::RUNTIME, true);
+
+            self::assertSame(0777, $files->getPermissions($directory));
+            self::assertSame(FilesInterface::RUNTIME, $files->getPermissions($filename));
+            self::assertSame('some-data', \file_get_contents($filename));
+        } finally {
+            @\chmod($directory, $directoryMode);
+        }
     }
 
     public function testRead(): void
@@ -60,12 +101,12 @@ class IOTest extends TestCase
         $files = new Files();
 
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
 
         $files->write($filename, 'some-data');
-        $this->assertTrue($files->exists($filename));
+        self::assertTrue($files->exists($filename));
 
-        $this->assertSame('some-data', $files->read($filename));
+        self::assertSame('some-data', $files->read($filename));
     }
 
     public function testReadMissingFile(): void
@@ -76,7 +117,7 @@ class IOTest extends TestCase
         $files = new Files();
 
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
 
         $files->read($filename);
     }
@@ -102,15 +143,15 @@ class IOTest extends TestCase
         $files = new Files();
 
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
 
         $files->append($filename, 'some-data');
-        $this->assertTrue($files->exists($filename));
+        self::assertTrue($files->exists($filename));
 
-        $this->assertSame('some-data', file_get_contents($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
 
         $files->append($filename, ';other-data');
-        $this->assertSame('some-data;other-data', file_get_contents($filename));
+        self::assertSame('some-data;other-data', \file_get_contents($filename));
     }
 
     public function testAppendEnsureDirectory(): void
@@ -120,19 +161,19 @@ class IOTest extends TestCase
         $directory = self::FIXTURE_DIRECTORY . '/directory/abc/';
         $filename = $directory . 'test.txt';
 
-        $this->assertFalse($files->exists($directory));
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($directory));
+        self::assertFalse($files->exists($filename));
 
-        $this->assertFalse($files->isDirectory($directory));
+        self::assertFalse($files->isDirectory($directory));
 
         $files->append($filename, 'some-data', null, true);
 
-        $this->assertTrue($files->isDirectory($directory));
-        $this->assertTrue($files->exists($filename));
-        $this->assertSame('some-data', file_get_contents($filename));
+        self::assertTrue($files->isDirectory($directory));
+        self::assertTrue($files->exists($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
 
         $files->append($filename, ';other-data', null, true);
-        $this->assertSame('some-data;other-data', file_get_contents($filename));
+        self::assertSame('some-data;other-data', \file_get_contents($filename));
     }
 
     public function testTouch(): void
@@ -141,9 +182,9 @@ class IOTest extends TestCase
 
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
         $files->touch($filename);
-        $this->assertTrue($files->exists($filename));
+        self::assertTrue($files->exists($filename));
     }
 
     public function testDelete(): void
@@ -151,13 +192,13 @@ class IOTest extends TestCase
         $files = new Files();
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
 
         $files->touch($filename);
-        $this->assertTrue($files->exists($filename));
+        self::assertTrue($files->exists($filename));
 
         $files->delete($filename);
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
     }
 
     public function testDeleteMissingFile(): void
@@ -165,7 +206,7 @@ class IOTest extends TestCase
         $files = new Files();
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
         $files->delete($filename);
     }
 
@@ -175,19 +216,19 @@ class IOTest extends TestCase
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
         $destination = self::FIXTURE_DIRECTORY . '/new.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
         $files->write($filename, 'some-data');
 
-        $this->assertTrue($files->exists($filename));
-        $this->assertSame('some-data', file_get_contents($filename));
+        self::assertTrue($files->exists($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
 
-        $this->assertFalse($files->exists($destination));
+        self::assertFalse($files->exists($destination));
 
-        $this->assertTrue($files->copy($filename, $destination));
-        $this->assertTrue($files->exists($destination));
-        $this->assertTrue($files->exists($filename));
+        self::assertTrue($files->copy($filename, $destination));
+        self::assertTrue($files->exists($destination));
+        self::assertTrue($files->exists($filename));
 
-        $this->assertSame(file_get_contents($filename), file_get_contents($destination));
+        self::assertSame(\file_get_contents($filename), \file_get_contents($destination));
     }
 
     public function testCopyMissingFile(): void
@@ -199,7 +240,7 @@ class IOTest extends TestCase
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
         $destination = self::FIXTURE_DIRECTORY . '/new.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
         $files->copy($filename, $destination);
     }
 
@@ -209,19 +250,19 @@ class IOTest extends TestCase
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
         $destination = self::FIXTURE_DIRECTORY . '/new.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
         $files->write($filename, 'some-data');
 
-        $this->assertTrue($files->exists($filename));
-        $this->assertSame('some-data', file_get_contents($filename));
+        self::assertTrue($files->exists($filename));
+        self::assertSame('some-data', \file_get_contents($filename));
 
-        $this->assertFalse($files->exists($destination));
+        self::assertFalse($files->exists($destination));
 
-        $this->assertTrue($files->move($filename, $destination));
-        $this->assertTrue($files->exists($destination));
-        $this->assertFalse($files->exists($filename));
+        self::assertTrue($files->move($filename, $destination));
+        self::assertTrue($files->exists($destination));
+        self::assertFalse($files->exists($filename));
 
-        $this->assertSame('some-data', file_get_contents($destination));
+        self::assertSame('some-data', \file_get_contents($destination));
     }
 
     public function testMoveMissingFile(): void
@@ -233,7 +274,19 @@ class IOTest extends TestCase
         $filename = self::FIXTURE_DIRECTORY . '/test.txt';
         $destination = self::FIXTURE_DIRECTORY . '/new.txt';
 
-        $this->assertFalse($files->exists($filename));
+        self::assertFalse($files->exists($filename));
         $files->move($filename, $destination);
+    }
+
+    protected function setUp(): void
+    {
+        $files = new Files();
+        $files->ensureDirectory(self::FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
+    }
+
+    protected function tearDown(): void
+    {
+        $files = new Files();
+        $files->deleteDirectory(self::FIXTURE_DIRECTORY, true);
     }
 }
