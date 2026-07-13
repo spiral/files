@@ -7,4 +7,6 @@ namespace Spiral\Files\Exception;
 /**
  * Generic files exception.
  */
-class FilesException extends \RuntimeException {}
+class FilesException extends \RuntimeException
+{
+}

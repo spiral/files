@@ -7,18 +7,30 @@ namespace Spiral\Tests\Files;
 use Spiral\Files\Files;
 use Spiral\Files\FilesInterface;
 
-final class TempFilesTest extends TestCase
+class TempFilesTest extends TestCase
 {
+    public function setUp(): void
+    {
+        $files = new Files();
+        $files->ensureDirectory(self::FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
+    }
+
+    public function tearDown(): void
+    {
+        $files = new Files();
+        $files->deleteDirectory(self::FIXTURE_DIRECTORY, true);
+    }
+
     public function testTempFilename(): void
     {
         $files = new Files();
 
         $tempFilename = $files->tempFilename();
-        self::assertTrue($files->exists($tempFilename));
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
     }
 
     public function testTempExtension(): void
@@ -26,12 +38,12 @@ final class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename('txt');
-        self::assertTrue($files->exists($tempFilename));
-        self::assertSame('txt', $files->extension($tempFilename));
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
+        $this->assertSame('txt', $files->extension($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
     }
 
     public function testTempCustomLocation(): void
@@ -39,15 +51,18 @@ final class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename('txt', self::FIXTURE_DIRECTORY);
-        self::assertTrue($files->exists($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
 
-        self::assertSame('txt', $files->extension($tempFilename));
-        self::assertSame($files->normalizePath(self::FIXTURE_DIRECTORY, true), $files->normalizePath(\dirname($tempFilename), true));
+        $this->assertSame('txt', $files->extension($tempFilename));
+        $this->assertSame(
+            $files->normalizePath(self::FIXTURE_DIRECTORY, true),
+            $files->normalizePath(dirname($tempFilename), true)
+        );
 
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
     }
 
     public function testAutoRemovalFilesWithExtensions(): void
@@ -55,26 +70,14 @@ final class TempFilesTest extends TestCase
         $files = new Files();
 
         $tempFilename = $files->tempFilename('txt');
-        self::assertTrue($files->exists($tempFilename));
-        self::assertSame('', $files->read($tempFilename));
+        $this->assertTrue($files->exists($tempFilename));
+        $this->assertSame('', $files->read($tempFilename));
 
         $files->write($tempFilename, 'sample-data');
-        self::assertSame('sample-data', $files->read($tempFilename));
+        $this->assertSame('sample-data', $files->read($tempFilename));
 
         $files->__destruct();
 
-        self::assertFileDoesNotExist($tempFilename);
-    }
-
-    protected function setUp(): void
-    {
-        $files = new Files();
-        $files->ensureDirectory(self::FIXTURE_DIRECTORY, FilesInterface::RUNTIME);
-    }
-
-    protected function tearDown(): void
-    {
-        $files = new Files();
-        $files->deleteDirectory(self::FIXTURE_DIRECTORY, true);
+        $this->assertFileDoesNotExist($tempFilename);
     }
 }

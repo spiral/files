@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Spiral\Files;
 
 use Spiral\Files\Exception\FileNotFoundException;
-use Spiral\Files\Exception\FilesException;
 use Spiral\Files\Exception\WriteErrorException;
 
 /**
@@ -23,7 +22,6 @@ interface FilesInterface
      * Few size constants for better size manipulations.
      */
     public const KB = 1024;
-
     public const MB = 1048576;
     public const GB = 1073741824;
 
@@ -36,16 +34,14 @@ interface FilesInterface
      * Ensure location (directory) existence with specified mode.
      *
      * @param int $mode When NULL class can pick default mode.
+     *
      */
-    public function ensureDirectory(string $directory, ?int $mode = null): bool;
+    public function ensureDirectory(string $directory, int $mode = null): bool;
 
     /**
      * Read file content into string.
      *
-     * @param non-empty-string $filename
-     *
      * @throws FileNotFoundException
-     * @throws FilesException When unable to read file.
      */
     public function read(string $filename): string;
 
@@ -61,8 +57,8 @@ interface FilesInterface
     public function write(
         string $filename,
         string $data,
-        ?int $mode = null,
-        bool $ensureDirectory = false,
+        int $mode = null,
+        bool $ensureDirectory = false
     ): bool;
 
     /**
@@ -77,8 +73,8 @@ interface FilesInterface
     public function append(
         string $filename,
         string $data,
-        ?int $mode = null,
-        bool $ensureDirectory = false,
+        int $mode = null,
+        bool $ensureDirectory = false
     ): bool;
 
     /**
@@ -110,7 +106,7 @@ interface FilesInterface
      *
      * @param int $mode When NULL class can pick default mode.
      */
-    public function touch(string $filename, ?int $mode = null): bool;
+    public function touch(string $filename, int $mode = null): bool;
 
     /**
      * Check if file exists.
@@ -132,52 +128,33 @@ interface FilesInterface
     /**
      * Get file MD5 hash.
      *
-     * @param non-empty-string $filename
-     *
      * @throws FileNotFoundException
-     * @throws FilesException When unable to get file hash.
      */
     public function md5(string $filename): string;
 
     /**
      * Timestamp when file being updated/created.
      *
-     * @param non-empty-string $filename
-     *
      * @throws FileNotFoundException
-     * @throws FilesException When unable to get file time.
      */
     public function time(string $filename): int;
 
-    /**
-     * @param non-empty-string $filename
-     */
     public function isDirectory(string $filename): bool;
 
-    /**
-     * @param non-empty-string $filename
-     */
     public function isFile(string $filename): bool;
 
     /**
      * Current file permissions (if exists).
      *
-     * @param non-empty-string $filename
-     * @return int<0, 511>
-     *
+     * @return positive-int
      * @throws FileNotFoundException
-     * @throws FilesException When unable to get file permissions.
      */
     public function getPermissions(string $filename): int;
 
     /**
      * Update file permissions.
      *
-     * @param non-empty-string $filename
-     * @param int<0, 511> $mode
-     *
      * @throws FileNotFoundException
-     * @throws FilesException When unable to set file permissions.
      */
     public function setPermissions(string $filename, int $mode): bool;
 
@@ -186,22 +163,18 @@ interface FilesInterface
      *
      * Note: not a generator yet, waiting for PHP7.
      *
-     * @param non-empty-string $location Location for search.
-     * @param non-empty-string|null $pattern Extension pattern.
-     *
-     * @return list<non-empty-string>
+     * @param string $location Location for search.
+     * @param string $pattern  Extension pattern.
      */
-    public function getFiles(string $location, ?string $pattern = null): array;
+    public function getFiles(string $location, string $pattern = null): array;
 
     /**
      * Return unique name of temporary (should be removed when interface implementation destructed)
      * file in desired location.
      *
      * @param string $extension Desired file extension.
-     *
-     * @throws FilesException When unable to create a temporary file.
      */
-    public function tempFilename(string $extension = '', ?string $location = null): string;
+    public function tempFilename(string $extension = '', string $location = null): string;
 
     /*
      * Move outside in a future versions.
